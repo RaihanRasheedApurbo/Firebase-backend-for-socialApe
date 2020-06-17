@@ -83,7 +83,20 @@ app.post('/scream',(request,response) => {
         
 
 })
- 
+ let token,uid
+ const isEmptyWithSpace = str => {
+     if(str.trim(' ')===''){
+         return true
+     }
+     return false
+ }
+ const isEmail = emailString => {
+     const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+     if(emailString.match(regex)){
+         return true
+     }
+     return false
+ }
  app.post('/signUp',(req,res) => {
 
      const newUser = {
@@ -92,9 +105,37 @@ app.post('/scream',(request,response) => {
         confirmPassword: req.body.confirmPassword,
         userHandle: req.body.userHandle
      }
-     // we have to validate these inputs later....
-     db.doc(`/users/${newUser.handle}`).get()
+     
+     let errors = {}
+
+     if(isEmptyWithSpace(newUser.email)){
+         errors.email = 'Must not be empty'
+     }else if(!isEmail(newUser.email)){
+         errors.email = 'Must be a valid email'
+     }
+
+     if(isEmptyWithSpace(newUser.password)){
+         errors.password = 'Must not be empty'
+     }
+
+     if(newUser.password!==newUser.confirmPassword){
+         errors.confirmPassword = 'Passwords do not match'
+     }
+
+     if(isEmptyWithSpace(newUser.userHandle)){
+        errors.handle = 'Must not be empty' 
+     }
+
+     if(Object.keys(errors).length>0){
+         return res.status(400).json(errors)
+     }
+    //  console.log('hi')
+    //  console.log(Object.keys(errors))
+
+
+     db.doc(`/user/${newUser.userHandle}`).get()
         .then(doc => {
+            //console.log(doc.exists)
             if(doc.exists){
                 return res.status(400).json({handle: 'this handle is taken already!'})
             }else{
@@ -105,19 +146,70 @@ app.post('/scream',(request,response) => {
             }
         })
         .then((data) => {
+            uid = data.user.uid
             return data.user.getIdToken()
                 
             
         })
-        .then(token => {
-            return res.status(201).json({token})
+        .then((data) => {
+            token = data
+            const newDoc = {
+                email: newUser.email,
+                createdAt: new Date().toISOString(),
+                userId: uid
+            }
+            return db.doc(`user/${newUser.userHandle}`).set(newDoc)
+            
+        })
+        .then(data => {
+             return res.status(201).json({token})
         })
         .catch(err => {
             //console.log('hi')
             //console.error(err.code)
-            res.status(500).json({message: 'error message',err : err.code})
+            if(err.code === 'auth/email-already-in-use'){
+                res.status(400).json({email: 'email already taken'})
+            }else{
+                res.status(500).json({message: 'error message',err : err.code})
+            }
+            
         })
      
+ })
+
+ app.post('/login',(req,res) => {
+     const user = {
+         email : req.body.email,
+         password: req.body.password
+     }
+     
+     let errors = {}
+     
+     if(isEmptyWithSpace(user.email)){
+         errors.email = 'Field can not be empty'
+     }else if(!isEmail(user.email)){
+         errors.email = 'Must be a valid email address'
+     }
+
+     if(isEmptyWithSpace(user.password)){
+         errors.password = 'Field can not be empty'
+     }
+
+     if(Object.keys(errors).length > 0){
+         res.status(400).json(errors)
+     }
+
+     firebase.auth().signInWithEmailAndPassword(user.email,user.password)
+        .then(data => {
+            return data.user.getIdToken()
+        })
+        .then(token => {
+            return res.json({token})
+        })
+        .catch(error => {
+            console.error(error)
+            return res.status(500).json({error: error.code})
+        })
  })
 
 exports.api = functions.https.onRequest(app)
