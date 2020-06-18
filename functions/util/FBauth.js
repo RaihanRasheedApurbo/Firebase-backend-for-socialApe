@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
       .verifyIdToken(idToken)
       .then((decodedToken) => {
         req.user = decodedToken;
-        console.log(decodedToken);
+        //console.log(decodedToken);
         return db
           .collection("user")
           .where("userId", "==", req.user.uid)
@@ -27,6 +27,7 @@ module.exports = (req, res, next) => {
       })
       .then((data) => {
         req.user.handle = data.docs[0].id;
+        req.user.imageUrl = data.docs[0].data().imageUrl;
         return next();
       })
       .catch((error) => {

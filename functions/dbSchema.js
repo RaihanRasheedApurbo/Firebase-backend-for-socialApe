@@ -37,6 +37,23 @@ let db = {
       // and so on.................
     },
   ],
+
+  comments: [
+      {
+          userHandle: 'user',
+          screamId: 'qepwroiuqweriou',
+          body: 'nice one mate!',
+          createdAt: 'timestamp',
+      },
+
+      {
+        //...............
+      },
+  
+      {
+        // and so on.................
+      },
+  ]
 };
 
 const userDetails = {
@@ -48,7 +65,7 @@ const userDetails = {
     imageUrl: "imag/.....",
     bio: "my-bio",
     website: "www.facebook.com",
-    location: "London,Uk",
+    location: "London,Uk",  
   },
   likes: [
     {
