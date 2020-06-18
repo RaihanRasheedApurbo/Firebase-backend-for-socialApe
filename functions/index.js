@@ -1,4 +1,5 @@
 const functions = require("firebase-functions");
+//const {db} = require('./util/admin')
 const {
   getAllScreams,
   postOneScream,
@@ -74,7 +75,7 @@ app.get("/test", testNow);
 exports.api = functions.https.onRequest(app);
 
 exports.createNotificationOnLike = functions.firestore
-  .document("like/{id}")
+  .document("likes/{id}")
   .onCreate((snapshot) => {
     db.doc(`/screams/${snapshot.data().screamId}`)
       .get()
