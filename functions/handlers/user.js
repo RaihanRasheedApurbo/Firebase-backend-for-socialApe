@@ -127,6 +127,8 @@ exports.signUp = (req, res) => {
 
 exports.addUserDetails = (req, res) => {
   let userDetails = reduceUserDetails(req.body);
+  console.log(userDetails)
+  console.log('inside adduserdetails')
 
   db.doc(`/user/${req.user.handle}`)
     .update(userDetails)
@@ -142,6 +144,7 @@ exports.addUserDetails = (req, res) => {
 
 exports.getUserDetails = (req, res) => {
   let userData = {};
+  console.log('inside getUserDetails')
   db.doc(`/user/${req.user.handle}`)
     .get()
     .then((doc) => {
