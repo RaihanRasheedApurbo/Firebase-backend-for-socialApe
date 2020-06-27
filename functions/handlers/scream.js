@@ -8,7 +8,7 @@ exports.getAllScreams = (req, res) => {
       let screams = [];
       data.forEach((doc) => {
         screams.push({
-          screamID: doc.id,
+          screamId: doc.id,
           ...doc.data(),
         });
       });
@@ -43,10 +43,11 @@ exports.postOneScream = (request, response) => {
   db.collection("screams")
     .add(newScream)
     .then((data) => {
+      db.doc(`/screams/${data.id}`).update({screamId: data.id})
       console.log(data);
       return response
         .status(201)
-        .json(newScream);
+        .json({...newScream, screamId: data.id});
     })
     .catch((err) => {
       console.error(err);
