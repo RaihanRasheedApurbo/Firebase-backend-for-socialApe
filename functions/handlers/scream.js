@@ -21,6 +21,14 @@ exports.getAllScreams = (req, res) => {
 };
 
 exports.postOneScream = (request, response) => {
+
+  
+  console.log(request.body.body)
+  console.log(isEmptyWithSpace(request.body.body))
+  if(isEmptyWithSpace(request.body.body)){
+    return response.status(500).json({ error: "Body must not be empty" });
+  }
+
   const newScream = {
     body: request.body.body,
     userHandle: request.user.handle,
@@ -30,13 +38,15 @@ exports.postOneScream = (request, response) => {
     commentCount: 0,
   };
 
+  
+
   db.collection("screams")
     .add(newScream)
     .then((data) => {
       console.log(data);
       return response
         .status(201)
-        .json({ message: `document ${data.id} created successfully!` });
+        .json(newScream);
     })
     .catch((err) => {
       console.error(err);
@@ -150,7 +160,7 @@ exports.likeScream = (req,res) => {
               }
               db.collection('likes').add({screamId,userHandle: req.user.handle})
                 .then((data) => {
-                  return res.status(201).json({message: `like ${data.id} is added in database`})
+                  return res.status(201).json(screamInfo)
                 })
                 .then(() => {
                   db.doc(`/screams/${screamId}`).update(screamInfo)

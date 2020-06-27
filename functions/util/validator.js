@@ -15,27 +15,29 @@ exports.isEmail = (emailString) => {
 exports.reduceUserDetails = (data) => {
   let userDetails = {};
 
-  // if (!isEmptyWithSpace(data.bio)) {
-  //   userDetails.bio = data.bio;
-  // }
+  
 
-  // if (!isEmptyWithSpace(data.website)) {
-  //   userDetails.website = data.website;
-  // }
+  
 
-  // if (!isEmptyWithSpace(data.location)) {
-  //   userDetails.location = data.location;
-  // }
+  
   if (data.bio !== undefined) {
-    userDetails.bio = data.bio;
+    if (!isEmptyWithSpace(data.bio)) {
+      userDetails.bio = data.bio;
+    }
+    
   }
 
   if (data.location !== undefined) {
-    userDetails.location = data.location;
+    if (!isEmptyWithSpace(data.location)) {
+      userDetails.location = data.location;
+    }
+    
   }
 
   if (data.website !== undefined) {
-    userDetails.website = data.website;
+    if (!isEmptyWithSpace(data.website)) {
+      userDetails.website = data.website;
+    }
   }
 
   return userDetails;
