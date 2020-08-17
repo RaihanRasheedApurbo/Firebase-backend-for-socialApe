@@ -90,7 +90,7 @@ exports.getScream = (req, res) => {
 
 exports.submitComment = (req,res) => {
   if(isEmptyWithSpace(req.body.body)){
-    return res.status(400).json({error: 'Must not be empty'})
+    return res.status(400).json({comment: 'Must not be empty'})
   }
 
   const newComment = {
@@ -123,7 +123,7 @@ exports.submitComment = (req,res) => {
       console.log('hi')
       console.error(err)
       console.log(newComment)
-      res.status(500).json({error : err.code})
+      res.status(500).json({comment : err.code})
     })
   }
   
