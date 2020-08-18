@@ -8,6 +8,7 @@ const {
   likeScream,
   unlikeScream,
   deleteScream,
+
 } = require("./handlers/scream");
 const {
   logIn,
@@ -15,6 +16,7 @@ const {
   uploadImage,
   addUserDetails,
   getUserDetails,
+  getAuthenticatedUser
 } = require("./handlers/user");
 const FBauth = require("./util/FBauth");
 // // Create and Deploy Your First Cloud Functions
@@ -37,8 +39,8 @@ app.post("/signup", signUp);
 app.post("/login", logIn);
 app.post("/user/image", FBauth, uploadImage);
 app.post("/user", FBauth, addUserDetails);
-app.get("/user", FBauth, getUserDetails);
-
+app.get('/user', FBauth, getAuthenticatedUser);
+app.get('/user/:handle', getUserDetails);
 const testNow = (req, res) => {
   //console.log(req.body)
   fetch("https://www.facebook.com")
